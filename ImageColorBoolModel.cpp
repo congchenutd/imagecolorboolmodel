@@ -1,50 +1,77 @@
 #include "ImageColorBoolModel.h"
+#include <QPixmap>
 
-ImageColorBoolModel::ImageColorBoolModel(QObject* parent) 
-: QStandardItemModel(parent), imageColumn(-1), imageSize(64, 64)
+//////////////////////////////////////////////////////////////////////////
+ImageColorBoolProxy::ImageColorBoolProxy(QObject* parent)
+: QSortFilterProxyModel(parent), imageColumn(-1), imageSize(64, 64)
 {}
 
-void ImageColorBoolModel::setColumnType(int column, ColumnType type)
+void ImageColorBoolProxy::setColumnType(int column, ColumnType type)
 {
 	columnTypes[column] = type;
 	if(type == ImageColumn)     // remember the ONLY imageColumn
 	{
-		if(imageColumn != -1)
+		if(imageColumn != -1)   // forget the old one
 			columnTypes[imageColumn] = RegularColumn;
 		imageColumn = column;
 	}
 }
 
-ImageColorBoolModel::ColumnType ImageColorBoolModel::getColumnType(int column) const {
+ImageColorBoolProxy::ColumnType ImageColorBoolProxy::getColumnType(int column) const {
 	return columnTypes.contains(column) ? columnTypes[column] : RegularColumn;
 }
 
-QVariant ImageColorBoolModel::data(const QModelIndex& idx, int role) const
+QVariant ImageColorBoolProxy::data(const QModelIndex& idx, int role) const
 {
 	if(!idx.isValid())
-		return QStandardItemModel::data(idx, role);
+		return QVariant();
 
 	ColumnType columnType = getColumnType(idx.column());
-	if(columnType == NameColumn)        // Name
-	{
+	if(columnType == NameColumn) {
 		if(role == Qt::DecorationRole && imageColumn != -1)
 		{
-			QImage image(data(index(idx.row(), imageColumn)).toString());
-			return QPixmap::fromImage(image.scaled(imageSize));
+			// get the image from the image column
+			QString fileName = QSortFilterProxyModel::data(index(idx.row(), imageColumn)).toString();
+			QImage image = QImage(fileName).scaled(imageSize);
+
+			// gray the image by the bool column
+			if(grayImageBy > -1)
+			{
+				bool gray = !QSortFilterProxyModel::data(index(idx.row(), grayImageBy)).toBool();
+				if(gray)
+					return toGrayPixmap(image);
+			}
+			return QPixmap::fromImage(image);
 		}
 	}
-	else if(columnType == ColorColumn)   // Color
-	{
-		if(role == Qt::DecorationRole)
-			return QColor(QStandardItemModel::data(idx, Qt::DisplayRole).toString());
-		else if(role == Qt::DisplayRole)
+	else if(columnType == ColorColumn) {
+		if(role == Qt::BackgroundColorRole)
+			return QColor(QSortFilterProxyModel::data(idx, Qt::DisplayRole).toString());
+		else if(role == Qt::DisplayRole)   // hide the text
 			return QVariant();
 	}
-	else if(columnType == BoolColumn)   // Bool
-	{
 
-	}
-
-	return QStandardItemModel::data(idx, role);
+	return QSortFilterProxyModel::data(idx, role);
 }
 
+// make a gray image by copy-pasting every pixel from the original image
+QPixmap ImageColorBoolProxy::toGrayPixmap(const QImage& colorImage)
+{
+	int width  = colorImage.width();
+	int height = colorImage.height();
+	QImage grayImage(width, height, QImage::Format_RGB32);
+	for(int i=0; i<width; ++i)
+		for(int j=0; j<height; ++j)
+		{
+			int pixel = colorImage.pixel(i, j);
+			int alpha = qAlpha(pixel);
+			if(alpha == 0)   // make transparent pixel white
+				grayImage.setPixel(i, j, qRgb(255, 255, 255));
+			else
+			{
+				int gray = qGray(pixel);
+				grayImage.setPixel(i, j, qRgb(gray, gray, gray));
+			}
+		}
+		return QPixmap::fromImage(grayImage);
+}
