@@ -1,27 +1,44 @@
 #ifndef IMAGECOLORBOOLMODEL_H
 #define IMAGECOLORBOOLMODEL_H
 
-#include <QStandardItemModel>
+#include <QSqlTableModel>
+#include <QAbstractProxyModel>
 #include <QMap>
+#include <QSize>
+#include <QSortFilterProxyModel>
 
-class ImageColorBoolModel : public QStandardItemModel
+// A proxy model that supports image, checkable, and color columns
+class ImageColorBoolProxy : public QSortFilterProxyModel
 {
 public:
-	typedef enum {RegularColumn, NameColumn, ImageColumn, ColorColumn, BoolColumn} ColumnType;
+	typedef enum {
+		RegularColumn, // plain old type
+		NameColumn,    // an image for DecorationRole
+		ImageColumn,   // the path of the image
+		ColorColumn,   // a color block
+		BoolColumn     // checkable, work with ImageColorBoolDelegate
+	} ColumnType;
 
 public:
-	ImageColorBoolModel(QObject* parent = 0);
-	QVariant data(const QModelIndex& idx, int role = Qt::DisplayRole) const;
+	ImageColorBoolProxy(QObject* parent = 0);
+
+	virtual QVariant data(const QModelIndex& idx, int role = Qt::DisplayRole) const;
+
+	ColumnType getColumnType(int column) const;
 	void setColumnType(int column, ColumnType type);
 	void setImageSize(const QSize& size) { imageSize = size; }
 
+	// gray image by a bool column (when it's false), such as Online
+	void setGrayImageBy(int boolColumn) { grayImageBy = boolColumn; }
+
 private:
-	ColumnType getColumnType(int column) const;
+	static QPixmap toGrayPixmap(const QImage& colorImage);
 
 private:
 	QMap<int, ColumnType> columnTypes;
-	int imageColumn;
 	QSize imageSize;
+	int imageColumn;   // the ONLY image column (currently I just need one image column)
+	int grayImageBy;   // gray the image based on the value of this bool column
 };
 
 #endif // IMAGECOLORBOOLMODEL_H
