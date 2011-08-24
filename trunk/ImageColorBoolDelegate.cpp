@@ -4,7 +4,7 @@
 #include <QPainter>
 
 ImageColorBoolDelegate::ImageColorBoolDelegate(ImageColorBoolProxy* m, QObject* parent)
-: QItemDelegate(parent), model(m) {}
+: QItemDelegate(parent), model(m), editTrigger(QEvent::MouseButtonDblClick) {}
 
 void ImageColorBoolDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 								   const QModelIndex& idx) const
@@ -29,7 +29,7 @@ void ImageColorBoolDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 bool ImageColorBoolDelegate::editorEvent(QEvent* event, QAbstractItemModel*, 
 								   const QStyleOptionViewItem& option, const QModelIndex& idx)
 {
-	if(isBoolColumn(idx.column()) && event->type() == QEvent::MouseButtonDblClick)
+	if(isBoolColumn(idx.column()) && event->type() == editTrigger)
 	{
 		model->setData(idx, !idx.data().toBool());   // flip the value
 		model->submit();

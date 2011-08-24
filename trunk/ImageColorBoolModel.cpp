@@ -6,15 +6,8 @@ ImageColorBoolProxy::ImageColorBoolProxy(QObject* parent)
 : QSortFilterProxyModel(parent), imageColumn(-1), imageSize(64, 64)
 {}
 
-void ImageColorBoolProxy::setColumnType(int column, ColumnType type)
-{
+void ImageColorBoolProxy::setColumnType(int column, ColumnType type) {
 	columnTypes[column] = type;
-	if(type == ImageColumn)     // remember the ONLY imageColumn
-	{
-		if(imageColumn != -1)   // forget the old one
-			columnTypes[imageColumn] = RegularColumn;
-		imageColumn = column;
-	}
 }
 
 ImageColorBoolProxy::ColumnType ImageColorBoolProxy::getColumnType(int column) const {
