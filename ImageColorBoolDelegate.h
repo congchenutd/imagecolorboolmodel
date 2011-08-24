@@ -2,6 +2,7 @@
 #define IMAGECOLORBOOLDELEGATE_H
 
 #include <QItemDelegate>
+#include <QEvent>
 
 class ImageColorBoolProxy;
 
@@ -11,6 +12,7 @@ class ImageColorBoolDelegate : public QItemDelegate
 {
 public:
 	ImageColorBoolDelegate(ImageColorBoolProxy* m, QObject* parent = 0);
+	void setEditTrigger(QEvent::Type eventType) { editTrigger = eventType; }
 
 	// virtuals
 	void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& idx) const;
@@ -23,6 +25,7 @@ private:
 
 private:
 	ImageColorBoolProxy* model;
+	QEvent::Type editTrigger;
 };
 
 #endif // IMAGECOLORBOOLDELEGATE_H

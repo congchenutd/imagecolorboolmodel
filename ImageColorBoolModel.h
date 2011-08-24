@@ -13,7 +13,7 @@ class ImageColorBoolProxy : public QSortFilterProxyModel
 public:
 	typedef enum {
 		RegularColumn, // plain old type
-		NameColumn,    // an image for DecorationRole
+		NameColumn,    // use an image for DecorationRole
 		ImageColumn,   // the path of the image
 		ColorColumn,   // a color block
 		BoolColumn     // checkable, work with ImageColorBoolDelegate
@@ -30,6 +30,7 @@ public:
 
 	// gray image by a bool column (when it's false), such as Online
 	void setGrayImageBy(int boolColumn) { grayImageBy = boolColumn; }
+	void setImageColumn(int column)     { imageColumn = column;     }
 
 private:
 	static QPixmap toGrayPixmap(const QImage& colorImage);
@@ -37,7 +38,7 @@ private:
 private:
 	QMap<int, ColumnType> columnTypes;
 	QSize imageSize;
-	int imageColumn;   // the ONLY image column (currently I just need one image column)
+	int imageColumn;   // the image that shows on the name column
 	int grayImageBy;   // gray the image based on the value of this bool column
 };
 
