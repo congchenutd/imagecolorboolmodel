@@ -1,4 +1,4 @@
-#include "ImageColorBoolModel.h"
+#include "ImageColorBoolProxy.h"
 #include <QPixmap>
 
 //////////////////////////////////////////////////////////////////////////
@@ -20,21 +20,21 @@ QVariant ImageColorBoolProxy::data(const QModelIndex& idx, int role) const
 		return QVariant();
 
 	ColumnType columnType = getColumnType(idx.column());
-	if(columnType == NameColumn) {
-		if(role == Qt::DecorationRole && imageColumn != -1)
+	if(columnType == NameColumn && imageColumn != -1)
+	{
+		bool gray = grayImageBy > -1 ? 
+			!QSortFilterProxyModel::data(index(idx.row(), grayImageBy)).toBool() : false;
+		if(role == Qt::DecorationRole)
 		{
 			// get the image from the image column
 			QString fileName = QSortFilterProxyModel::data(index(idx.row(), imageColumn)).toString();
 			QImage image = QImage(fileName).scaled(imageSize);
 
 			// gray the image by the bool column
-			if(grayImageBy > -1)
-			{
-				bool gray = !QSortFilterProxyModel::data(index(idx.row(), grayImageBy)).toBool();
-				if(gray)
-					return toGrayPixmap(image);
-			}
-			return QPixmap::fromImage(image);
+			return gray ? toGrayPixmap(image) : QPixmap::fromImage(image);
+		}
+		else if(role == Qt::ForegroundRole) {   // gray the text
+			return gray ? QColor(Qt::gray) : QSortFilterProxyModel::data(idx, role);
 		}
 	}
 	else if(columnType == ColorColumn) {
