@@ -1,5 +1,5 @@
 #include "ImageColorBoolDelegate.h"
-#include "ImageColorBoolModel.h"
+#include "ImageColorBoolProxy.h"
 #include <QEvent>
 #include <QPainter>
 
