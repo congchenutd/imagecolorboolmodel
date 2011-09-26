@@ -3,7 +3,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 ImageColorBoolProxy::ImageColorBoolProxy(QObject* parent)
-: QSortFilterProxyModel(parent), imageColumn(-1), imageSize(64, 64)
+: QSortFilterProxyModel(parent), imageSize(64, 64), imageColumn(-1)
 {}
 
 void ImageColorBoolProxy::setColumnType(int column, ColumnType type) {
