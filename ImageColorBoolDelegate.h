@@ -3,6 +3,7 @@
 
 #include <QItemDelegate>
 #include <QEvent>
+#include <QPixmap>
 
 class ImageColorBoolProxy;
 
@@ -12,6 +13,8 @@ class ImageColorBoolDelegate : public QItemDelegate
 {
 public:
 	ImageColorBoolDelegate(ImageColorBoolProxy* m, QObject* parent = 0);
+	void setCheckedImage  (const QPixmap& img) { imgChecked   = img; }
+	void setUncheckedImage(const QPixmap& img) { imgUnchecked = img; }
 	void setEditTrigger(QEvent::Type eventType) { editTrigger = eventType; }
 
 	// virtuals
@@ -26,6 +29,8 @@ private:
 private:
 	ImageColorBoolProxy* model;
 	QEvent::Type editTrigger;
+	QPixmap imgChecked;
+	QPixmap imgUnchecked;
 };
 
 #endif // IMAGECOLORBOOLDELEGATE_H

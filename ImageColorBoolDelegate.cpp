@@ -14,8 +14,7 @@ void ImageColorBoolDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 		if(option.state & QStyle::State_Selected)  // selection shadow
 			painter->fillRect(option.rect, option.palette.highlight());
 
-		QString imageFile = idx.data().toBool() ? "Checked.png" : "Unchecked.png";
-		QPixmap pixmap(imageFile);
+		const QPixmap& pixmap = idx.data().toBool() ? imgChecked : imgUnchecked;
 		int width  = pixmap.width();
 		int height = pixmap.height();
 		int x = option.rect.x() + (option.rect.width()  - width)  / 2;  // center of the cell
