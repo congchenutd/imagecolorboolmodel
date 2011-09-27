@@ -1,4 +1,4 @@
-#include "ImageColorBoolModel.h"
+#include "ImageColorBoolProxy.h"
 #include "ImageColorBoolDelegate.h"
 #include <QtGui/QApplication>
 #include <QTableView>
