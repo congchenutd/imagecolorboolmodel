@@ -11,9 +11,11 @@ void ImageColorBoolDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 {
 	if(isBoolColumn(idx.column()))
 	{
-		if(option.state & QStyle::State_Selected)  // selection shadow
+        // draw selection shadow
+        if(option.state & QStyle::State_Selected)
 			painter->fillRect(option.rect, option.palette.highlight());
 
+        // draw image
 		const QPixmap& pixmap = idx.data().toBool() ? imgChecked : imgUnchecked;
 		int width  = pixmap.width();
 		int height = pixmap.height();
@@ -32,7 +34,7 @@ bool ImageColorBoolDelegate::editorEvent(QEvent* event, QAbstractItemModel*,
 	{
 		model->setData(idx, !idx.data().toBool());   // flip the value
 		model->submit();
-		return true;   // true means successful? failed to find the document
+        return true;   // true means successful? failed to find it in the document
 	}
 	return QItemDelegate::editorEvent(event, model, option, idx);
 }
@@ -45,5 +47,5 @@ QWidget* ImageColorBoolDelegate::createEditor(QWidget* parent,
 											  const QStyleOptionViewItem& option, 
 											  const QModelIndex& idx) const {
 	return isBoolColumn(idx.column()) ? 0    // disable the original editor
-			: QItemDelegate::createEditor(parent, option, idx);
+                                      : QItemDelegate::createEditor(parent, option, idx);
 }
