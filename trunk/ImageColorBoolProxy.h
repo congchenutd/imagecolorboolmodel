@@ -1,7 +1,6 @@
 #ifndef IMAGECOLORBOOLMODEL_H
 #define IMAGECOLORBOOLMODEL_H
 
-#include <QSqlTableModel>
 #include <QAbstractProxyModel>
 #include <QMap>
 #include <QSize>
